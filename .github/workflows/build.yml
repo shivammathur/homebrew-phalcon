@@ -1,0 +1,65 @@
+name: 'Build Formulae'
+on:
+  push:
+  repository_dispatch:
+jobs:
+  psr:
+    runs-on: macOS-latest
+    strategy:
+      max-parallel: 3
+      fail-fast: false
+      matrix:
+        psr-version:
+          - 'psr@7.0'
+          - 'psr@7.1'
+          - 'psr@7.2'
+          - 'psr@7.3'
+          - 'psr@7.4'
+    steps:
+    - uses: actions/checkout@v1
+    - name: build
+      run: sh ./.github/scripts/build_psr.sh
+      env:
+        GIT_URL: https://github.com/shivammathur/homebrew-phalcon.git
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        GITHUB_NAME: "Shivam Mathur"        
+        HOMEBREW_BINTRAY_USER: shivammathur
+        HOMEBREW_BINTRAY_REPO: phalcon
+        HOMEBREW_BINTRAY_EMAIL: ${{ secrets.email }}
+        HOMEBREW_BINTRAY_KEY: ${{ secrets.bintray_key }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PSR_VERSION: ${{ matrix.psr-version }}
+        GITHUB_ACTIONS: true
+      continue-on-error: true
+  phalcon:
+    needs: psr
+    runs-on: macOS-latest
+    strategy:
+      max-parallel: 3
+      fail-fast: false
+      matrix:
+        psr-version:
+          - 'phalcon@7.0_3'
+          - 'phalcon@7.1_3'
+          - 'phalcon@7.2_3'
+          - 'phalcon@7.3_3'
+          - 'phalcon@7.2_4'
+          - 'phalcon@7.3_4'
+          - 'phalcon@7.4_4'
+    steps:
+      - uses: actions/checkout@v1
+      - name: build
+        run: sh ./.github/scripts/build_phalcon.sh
+        env:
+          GIT_URL: https://github.com/shivammathur/homebrew-phalcon.git
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_NAME: "Shivam Mathur"
+          HOMEBREW_BINTRAY_USER: shivammathur
+          HOMEBREW_BINTRAY_REPO: phalcon
+          HOMEBREW_BINTRAY_EMAIL: ${{ secrets.email }}
+          HOMEBREW_BINTRAY_KEY: ${{ secrets.bintray_key }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PHALCON_VERSION: ${{ matrix.psr-version }}
+          GITHUB_ACTIONS: true
+        continue-on-error: true
+      
