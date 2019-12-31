@@ -11,7 +11,8 @@ class PsrAT74 < AbstractPhp74Extension
   bottle do
     root_url "https://dl.bintray.com/shivammathur/phalcon"
     cellar :any_skip_relocation
-    sha256 "3ca8cd9631c2a02beb540cf6649e86a24119bcbbb566ea51a1a66f343311b64b" => :catalina
+    rebuild 1
+    sha256 "041770a9025531dbaffd7c26b70249df698ce0495f2932a639816136eed26d62" => :catalina
   end
 
   depends_on "pcre"
