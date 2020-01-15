@@ -10,13 +10,12 @@ jobs:
       fail-fast: false
       matrix:
         psr-version:
-          - 'psr@7.0'
           - 'psr@7.1'
           - 'psr@7.2'
           - 'psr@7.3'
           - 'psr@7.4'
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: build
       run: sh ./.github/scripts/build_psr.sh
       env:
@@ -39,7 +38,6 @@ jobs:
       fail-fast: false
       matrix:
         psr-version:
-          - 'phalcon@7.0_3'
           - 'phalcon@7.1_3'
           - 'phalcon@7.2_3'
           - 'phalcon@7.3_3'
@@ -47,7 +45,7 @@ jobs:
           - 'phalcon@7.3_4'
           - 'phalcon@7.4_4'
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: build
         run: sh ./.github/scripts/build_phalcon.sh
         env:
