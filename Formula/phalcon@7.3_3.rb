@@ -11,8 +11,8 @@ class PhalconAT733 < AbstractPhp73Extension
   bottle do
     root_url "https://dl.bintray.com/shivammathur/phalcon"
     cellar :any_skip_relocation
-    rebuild 2
-    sha256 "d438a0e3da356ec427da0d863fc06969b368f6081ca9cddb148f2a2320c12326" => :catalina
+    rebuild 3
+    sha256 "b1f95523e95bfe18b3eb925157135c374e1f17d6dcf0c0b305b69b865b9f573d" => :catalina
   end
 
   depends_on "pcre"
