@@ -43,8 +43,8 @@ fi
 echo "existing label: $existing_version"
 echo "new label: $new_version"
 
-#if [ "$new_version" != "$existing_version" ]; then
-if true; then
+if [ "$new_version" != "$existing_version" ]; then
+#if true; then
   step_log "Filling the Bottle"
   sudo ln -sf "$PWD" "$(brew --prefix)/Homebrew/Library/Taps/$GITHUB_REPOSITORY"
   brew test-bot "$HOMEBREW_BINTRAY_USER"/"$HOMEBREW_BINTRAY_REPO"/"$PHALCON_VERSION" --root-url=https://dl.bintray.com/"$HOMEBREW_BINTRAY_USER"/"$HOMEBREW_BINTRAY_REPO" --skip-setup --skip-homebrew --skip-recursive-dependents
