@@ -4,14 +4,14 @@ class PhalconAT744 < AbstractPhp74Extension
   init
   desc "Full-stack PHP framework"
   homepage "https://phalconphp.com/"
-  url "https://github.com/phalcon/cphalcon/archive/v4.0.2.tar.gz"
-  sha256 "db54ad12010e2f38c4a573e4552362f9199bbdd828033546e676bb466c5dbaf0"
+  url "https://github.com/phalcon/cphalcon/archive/v4.0.3.tar.gz"
+  sha256 "4ecad36651f33f7cfa909adedac25fee4527ee44b3843680b63b97898daa07bb"
   head "https://github.com/phalcon/cphalcon.git"
 
   bottle do
     root_url "https://dl.bintray.com/shivammathur/phalcon"
     cellar :any_skip_relocation
-    sha256 "901e2f50b34d9b28a3f224b5cf1fa18130ad2f14b736efbd59379e19fd5aa33a" => :catalina
+    sha256 "3c1acf709c7e6bba5db3f7f13f88a2edb0ad36a87eb56427e04a7828dfb6795f" => :catalina
   end
 
   depends_on "pcre"
