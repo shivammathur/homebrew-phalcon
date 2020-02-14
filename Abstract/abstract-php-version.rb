@@ -43,38 +43,38 @@ class AbstractPhpVersion < Formula
   end
 
   module Php72Defs
-    PHP_SRC_TARBALL = "https://php.net/get/php-7.2.26.tar.bz2/from/this/mirror".freeze
+    PHP_SRC_TARBALL = "https://php.net/get/php-7.2.27.tar.bz2/from/this/mirror".freeze
     PHP_GITHUB_URL  = "https://github.com/php/php-src.git".freeze
-    PHP_VERSION     = "7.2.26".freeze
-    PHP_BRANCH      = "PHP-7.2.26".freeze
+    PHP_VERSION     = "7.2.27".freeze
+    PHP_BRANCH      = "PHP-7.2.27".freeze
     PHP_FORMULA     = "shivammathur/php/php@7.2".freeze
 
     PHP_CHECKSUM    = {
-      :sha256 => "f36d86eecf57ff919d6f67b064e1f41993f62e3991ea4796038d8d99c74e847b",
+      :sha256 => "5bc0695b171b870ceb083c5432c6a758d3dbd3830a0cf6cf35bd9b283a627049",
     }.freeze
   end
 
   module Php73Defs
-    PHP_SRC_TARBALL = "https://php.net/get/php-7.3.13.tar.bz2/from/this/mirror".freeze
+    PHP_SRC_TARBALL = "https://php.net/get/php-7.3.14.tar.bz2/from/this/mirror".freeze
     PHP_GITHUB_URL  = "https://github.com/php/php-src.git".freeze
-    PHP_VERSION     = "7.3.13".freeze
-    PHP_BRANCH      = "PHP-7.3.13".freeze
+    PHP_VERSION     = "7.3.14".freeze
+    PHP_BRANCH      = "PHP-7.3.14".freeze
     PHP_FORMULA     = "shivammathur/php/php@7.3".freeze
 
     PHP_CHECKSUM    = {
-      :sha256 => "5c7b89062814f3c3953d1518f63ed463fd452929e3a37110af4170c5d23267bc",
+      :sha256 => "b9dfcbbbc929ce67995f976de8636c5f46804593ecae6e110509329b9dc6c272",
     }.freeze
   end
 
   module Php74Defs
-    PHP_SRC_TARBALL = "https://php.net/get/php-7.4.1.tar.bz2/from/this/mirror".freeze
+    PHP_SRC_TARBALL = "https://php.net/get/php-7.4.2.tar.bz2/from/this/mirror".freeze
     PHP_GITHUB_URL  = "https://github.com/php/php-src.git".freeze
-    PHP_VERSION     = "7.4.1".freeze
-    PHP_BRANCH      = "PHP-7.4.1".freeze
+    PHP_VERSION     = "7.4.2".freeze
+    PHP_BRANCH      = "PHP-7.4.2".freeze
     PHP_FORMULA     = "shivammathur/php/php".freeze
 
     PHP_CHECKSUM    = {
-      :sha256 => "6b1ca0f0b83aa2103f1e454739665e1b2802b90b3137fc79ccaa8c242ae48e4e",
+      :sha256 => "02909974be9c70814ed5652a6bdae9c74220d41c1e5ed5ad921e15d028f8e816",
     }.freeze
   end
 end
