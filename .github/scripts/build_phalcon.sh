@@ -43,7 +43,7 @@ fi
 echo "existing label: $existing_version"
 echo "new label: $new_version"
 
-if [ "$new_version" != "$existing_version" ] || [ "$PHALCON_VERSION" = "phalcon@7.2_3" ]; then
+if [ "$new_version" != "$existing_version" ]; then
 #if true; then
   step_log "Filling the Bottle"
   sudo ln -sf "$PWD" "$(brew --prefix)/Homebrew/Library/Taps/$GITHUB_REPOSITORY"
