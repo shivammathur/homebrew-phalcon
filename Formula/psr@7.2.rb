@@ -4,15 +4,14 @@ class PsrAT72 < AbstractPhp72Extension
   init
   desc "PHP extension providing the accepted PSR interfaces "
   homepage "https://phalconphp.com/"
-  url "https://github.com/jbboehr/php-psr/archive/v0.7.0.tar.gz"
-  sha256 "648aac07414f8c6e5c80728cf91fa8174bbd18dd41ae1a90168b510a507cf805"
+  url "https://github.com/jbboehr/php-psr/archive/v1.0.0.tar.gz"
+  sha256 "f85be1d1434368abd16e06b81e394487f81b5e2706220f01c85558ba486ee3e7"
   head "https://github.com/jbboehr/php-psr.git"
 
   bottle do
     root_url "https://dl.bintray.com/shivammathur/phalcon"
     cellar :any_skip_relocation
-    rebuild 3
-    sha256 "8e752fb09b17367f89a9510f1e23deecfff84b8cdc30e9304cd80e07362552b0" => :catalina
+    sha256 "1c9f265bef9153427043c0ebfbf1594a4388803e4a2fe3499536a34ed787626d" => :catalina
   end
 
   depends_on "pcre"
