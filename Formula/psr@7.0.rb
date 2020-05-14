@@ -9,7 +9,9 @@ class PsrAT70 < AbstractPhp70Extension
   head "https://github.com/jbboehr/php-psr.git"
 
   bottle do
-    root_url "https://github.com/shivammathur/phalcon"
+    root_url "https://dl.bintray.com/shivammathur/phalcon"
+    cellar :any_skip_relocation
+    sha256 "75b6e3e80be7d7f060ac775f5d49b92acd4f79fa2417245fac8453d45f4fa8f5" => :catalina
   end
 
   depends_on "pcre"
