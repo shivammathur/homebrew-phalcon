@@ -9,7 +9,9 @@ class PhalconAT703 < AbstractPhp70Extension
   head "https://github.com/phalcon/cphalcon.git"
 
   bottle do
-    root_url "https://github.com/shivammathur/phalcon"
+    root_url "https://dl.bintray.com/shivammathur/phalcon"
+    cellar :any_skip_relocation
+    sha256 "0198d866a8a8c3d1a63efebfe3f0ce4021db12e1a57d3fce2978d9bbf3b2782c" => :catalina
   end
 
   depends_on "pcre"
