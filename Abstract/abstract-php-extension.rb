@@ -22,8 +22,10 @@ class InvalidPhpizeError < RuntimeError
 end
 
 class AbstractPhpExtension < Formula
+  desc "Abstract class for PHP Extension Formula"
+  homepage "https://github.com/shivammathur/homebrew-phalcon"
 
-  PHP_REGEX = /[P,p][H,h][P,p][@]*([5,7])\.([0-9]+)/
+  PHP_REGEX = /[P,p][H,h][P,p][@]*([5,7])\.([0-9]+)/.freeze
 
   def initialize(*)
     super
@@ -34,17 +36,13 @@ class AbstractPhpExtension < Formula
       out = i.readlines.join("")
       i.close
       {
-        53 => 2009.*,
-        54 => 2010.*,
-        55 => 2012.*,
-        56 => 2013.*,
         70 => 2015.*,
         71 => 2016.*,
         72 => 2017.*,
         73 => 2018.*,
-        74 => 2019.*
+        74 => 2019.*,
       }.each do |v, api|
-        installed_php_version = v.to_s if out.match(/#{api}/)
+        installed_php_version =~ v.to_s if out.match?(/#{api}/)
       end
 
       raise UnsupportedPhpApiError if installed_php_version.nil?
@@ -67,14 +65,10 @@ class AbstractPhpExtension < Formula
     class_name = self.class.name.split("::").last
     if self.class::PHP_FORMULA
       class_name = self.class::PHP_FORMULA
-      if class_name == "shivammathur/php/php"
-        class_name = "shivammathur/php/php@7.4"
-      end
+      class_name == "shivammathur/php/php" && class_name = "shivammathur/php/php@7.4"
     end
     matches = PHP_REGEX.match(class_name)
-    if matches
-      matches[1] + "." + matches[2]
-    end
+    matches[1] + "." + matches[2] if matches
   end
 
   def php_formula
@@ -137,13 +131,9 @@ class AbstractPhpExtension < Formula
     <<-EOS.undent
       [#{extension}]
       #{extension_type}="#{module_path}"
-      EOS
-  rescue StandardError => error
+    EOS
+  rescue error
     raise error
-  end
-
-  test do
-    assert shell_output("#{Formula[php_formula].opt_bin}/php -m").downcase.include?(extension.downcase), "failed to find extension in php -m output"
   end
 
   def caveats
@@ -158,26 +148,30 @@ class AbstractPhpExtension < Formula
     end
 
     caveats << <<-EOS
-  * Validate installation via one of the following methods:
-  *
-  * Using PHP from a webserver:
-  * - Restart your webserver.
-  * - Write a PHP page that calls "phpinfo();"
-  * - Load it in a browser and look for the info on the #{extension} module.
-  * - If you see it, you have been successful!
-  *
-  * Using PHP from the command line:
-  * - Run `php -i "(command-line 'phpinfo()')"`
-  * - Look for the info on the #{extension} module.
-  * - If you see it, you have been successful!
-EOS
+      * Validate installation via one of the following methods:
+      *
+      * Using PHP from a webserver:
+      * - Restart your webserver.
+      * - Write a PHP page that calls "phpinfo();"
+      * - Load it in a browser and look for the info on the #{extension} module.
+      * - If you see it, you have been successful!
+      *
+      * Using PHP from the command line:
+      * - Run `php -i "(command-line 'phpinfo()')"`
+      * - Look for the info on the #{extension} module.
+      * - If you see it, you have been successful!
+    EOS
 
     caveats.join("\n")
   end
 
+  test do
+    output = shell_output("#{Formula[php_formula].opt_bin}/php -m").downcase
+    assert_match /#{extension.downcase}/, output, "failed to find extension in php -m output"
+  end
+
   def config_path
     etc / "php" / php_branch
-
   end
 
   def config_scandir_path
@@ -201,15 +195,6 @@ EOS
       config_scandir_path.mkpath
       config_filepath.write(config_file)
     end
-  end
-end
-
-class AbstractPhp56Extension < AbstractPhpExtension
-  include AbstractPhpVersion::Php56Defs
-
-  def self.init(opts = [])
-    super()
-    depends_on "shivammathur/php/php@5.6" => opts if build.with?("homebrew-php")
   end
 end
 

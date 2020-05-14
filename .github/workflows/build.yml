@@ -3,7 +3,7 @@ on:
   push:
   repository_dispatch:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '30 0 * * *'
 jobs:
   psr:
     runs-on: macOS-latest
@@ -12,6 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         psr-version:
+          - 'psr@7.0'
           - 'psr@7.1'
           - 'psr@7.2'
           - 'psr@7.3'
@@ -40,6 +41,7 @@ jobs:
       fail-fast: false
       matrix:
         psr-version:
+          - 'phalcon@7.0_3'
           - 'phalcon@7.1_3'
           - 'phalcon@7.2_3'
           - 'phalcon@7.3_3'
