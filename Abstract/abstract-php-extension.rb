@@ -65,7 +65,7 @@ class AbstractPhpExtension < Formula
     class_name = self.class.name.split("::").last
     if self.class::PHP_FORMULA
       class_name = self.class::PHP_FORMULA
-      class_name == "shivammathur/php/php" && class_name = "shivammathur/php/php@7.4"
+      class_name == "homebrew/core/php" && class_name = "homebrew/core/php@7.4"
     end
     matches = PHP_REGEX.match(class_name)
     matches[1] + "." + matches[2] if matches
@@ -239,6 +239,6 @@ class AbstractPhp74Extension < AbstractPhpExtension
 
   def self.init(opts = [])
     super()
-    depends_on "shivammathur/php/php" => opts if build.with?("homebrew-php")
+    depends_on "homebrew/core/php" => opts if build.with?("homebrew-php")
   end
 end
