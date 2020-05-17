@@ -1,4 +1,5 @@
 tick="✓"
+cross="✗"
 
 step_log() {
   message=$1
@@ -67,17 +68,21 @@ if [ "$new_version" != "$existing_version" ]; then
 
   step_log "Stocking the new Bottle"
   git stash
-  sleep $((RANDOM % 100 + 1))s
+  sleep $((RANDOM % 200 + 1))s  
   git pull -f https://"$HOMEBREW_BINTRAY_USER":"$GITHUB_TOKEN"@github.com/"$GITHUB_REPOSITORY".git HEAD:master
   git stash apply
-  curl --user "$HOMEBREW_BINTRAY_USER":"$HOMEBREW_BINTRAY_KEY" -X DELETE https://api.bintray.com/packages/"$HOMEBREW_BINTRAY_USER"/"$HOMEBREW_BINTRAY_REPO"/"$package"/versions/"$new_version"
-  brew test-bot --ci-upload --tap="$GITHUB_REPOSITORY" --root-url=https://dl.bintray.com/"$HOMEBREW_BINTRAY_USER"/"$HOMEBREW_BINTRAY_REPO" --bintray-org="$HOMEBREW_BINTRAY_USER"
-  curl --user "$HOMEBREW_BINTRAY_USER":"$HOMEBREW_BINTRAY_KEY" -X POST https://api.bintray.com/content/"$HOMEBREW_BINTRAY_USER"/"$HOMEBREW_BINTRAY_REPO"/"$package"/"$new_version"/publish
-  add_log "$tick" "PSR $PSR_VERSION" "Bottle added to stock"
+  if [ $(ls *.json 2>/dev/null | wc -l) != "0" ]; then
+    curl --user "$HOMEBREW_BINTRAY_USER":"$HOMEBREW_BINTRAY_KEY" -X DELETE https://api.bintray.com/packages/"$HOMEBREW_BINTRAY_USER"/"$HOMEBREW_BINTRAY_REPO"/"$package"/versions/"$new_version"
+    brew test-bot --ci-upload --tap="$GITHUB_REPOSITORY" --root-url=https://dl.bintray.com/"$HOMEBREW_BINTRAY_USER"/"$HOMEBREW_BINTRAY_REPO" --bintray-org="$HOMEBREW_BINTRAY_USER"
+    curl --user "$HOMEBREW_BINTRAY_USER":"$HOMEBREW_BINTRAY_KEY" -X POST https://api.bintray.com/content/"$HOMEBREW_BINTRAY_USER"/"$HOMEBREW_BINTRAY_REPO"/"$package"/"$new_version"/publish
+    add_log "$tick" "PSR $PSR_VERSION" "Bottle added to stock"
 
-  step_log "Updating inventory"
-  git push https://"$HOMEBREW_BINTRAY_USER":"$GITHUB_TOKEN"@github.com/"$GITHUB_REPOSITORY".git HEAD:master --follow-tags
-  add_log "$tick" "Inventory" "updated"
+    step_log "Updating inventory"
+    git push https://"$HOMEBREW_BINTRAY_USER":"$GITHUB_TOKEN"@github.com/"$GITHUB_REPOSITORY".git HEAD:master --follow-tags
+    add_log "$tick" "Inventory" "updated"
+  else
+    add_log "$cross" "bottle" "broke"
+  fi    
 else
   add_log "$tick" "PSR $new_version" "Bottle exists"
 fi
