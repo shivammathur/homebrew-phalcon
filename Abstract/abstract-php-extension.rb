@@ -73,7 +73,7 @@ class AbstractPhpExtension < Formula
 
   def php_formula
     if php_branch == "7.4"
-      "shivammathur/php/php"
+      "homebrew/core/php"
     else
       "shivammathur/php/php@" + php_branch
     end
