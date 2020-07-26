@@ -20,7 +20,6 @@ add_log() {
 step_log "Housekeeping"
 unset HOMEBREW_DISABLE_LOAD_FORMULA
 brew update-reset "$(brew --repository)" >/dev/null 2>&1
-brew tap shivammathur/homebrew-php
 add_log "$tick" "Housekeeping" "Done"
 
 step_log "Adding tap $GITHUB_REPOSITORY"
@@ -44,8 +43,7 @@ fi
 echo "existing label: $existing_version"
 echo "new label: $new_version"
 
-if [ "$new_version" != "$existing_version" ]; then
-#if true; then
+if [[ "$GITHUB_MESSAGE" = *--build-all* ]] || [ "$new_version" != "$existing_version" ]; then
   step_log "Filling the Bottle"
   sudo ln -sf "$PWD" "$(brew --prefix)/Homebrew/Library/Taps/$GITHUB_REPOSITORY"
   brew test-bot "$HOMEBREW_BINTRAY_USER"/"$HOMEBREW_BINTRAY_REPO"/"$PHALCON_VERSION" --root-url=https://dl.bintray.com/"$HOMEBREW_BINTRAY_USER"/"$HOMEBREW_BINTRAY_REPO" --skip-setup --skip-recursive-dependents
@@ -70,20 +68,24 @@ if [ "$new_version" != "$existing_version" ]; then
   add_log "$tick" "$package" "Bottle labeled"
 
   step_log "Stocking the new Bottle"
-  git stash
-  sleep $((RANDOM % 200 + 1))s
-  git pull -f https://"$HOMEBREW_BINTRAY_USER":"$GITHUB_TOKEN"@github.com/"$GITHUB_REPOSITORY".git HEAD:master
-  git stash apply
-  if [ $(ls *.json 2>/dev/null | wc -l) != "0" ]; then
+  if [ "$(find . -name '*.json' | wc -l 2>/dev/null | wc -l)" != "0" ]; then
     curl --user "$HOMEBREW_BINTRAY_USER":"$HOMEBREW_BINTRAY_KEY" -X DELETE https://api.bintray.com/packages/"$HOMEBREW_BINTRAY_USER"/"$HOMEBREW_BINTRAY_REPO"/"$package"/versions/"$new_version" >/dev/null 2>&1 || true
     brew test-bot --ci-upload --tap="$GITHUB_REPOSITORY" --root-url=https://dl.bintray.com/"$HOMEBREW_BINTRAY_USER"/"$HOMEBREW_BINTRAY_REPO" --bintray-org="$HOMEBREW_BINTRAY_USER"
     curl --user "$HOMEBREW_BINTRAY_USER":"$HOMEBREW_BINTRAY_KEY" -X POST https://api.bintray.com/content/"$HOMEBREW_BINTRAY_USER"/"$HOMEBREW_BINTRAY_REPO"/"$package"/"$new_version"/publish >/dev/null 2>&1 || true
     add_log "$tick" "Phalcon $PHALCON_VERSION" "Bottle added to stock"
 
-
     step_log "Updating inventory"
-    git push https://"$HOMEBREW_BINTRAY_USER":"$GITHUB_TOKEN"@github.com/"$GITHUB_REPOSITORY".git HEAD:master --follow-tags
-    add_log "$tick" "Inventory" "updated"
+    git config --local user.email homebrew-test-bot@lists.sfconservancy.org
+    git config --local user.name BrewTestBot    
+    for try in $(seq 10); do
+      echo "try: $try" >/dev/null
+      git fetch origin master && git rebase origin/master
+      if git push https://"$GITHUB_REPOSITORY_OWNER":"$GITHUB_TOKEN"@github.com/"$GITHUB_REPOSITORY".git HEAD:master --follow-tags; then
+        break
+      else
+        sleep 3s
+      fi
+    done
   else
     add_log "$cross" "bottle" "broke"
   fi

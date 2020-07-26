@@ -1,4 +1,3 @@
-require "formula"
 require File.join(File.dirname(__FILE__), "abstract-php-version")
 
 class String
@@ -7,106 +6,34 @@ class String
   end
 end
 
-class UnsupportedPhpApiError < RuntimeError
-  def initialize
-    super "Unsupported PHP API Version"
-  end
-end
-
-class InvalidPhpizeError < RuntimeError
-  def initialize(installed_php_version, required_php_version)
-    super <<-EOS.undent
-      Version of phpize (PHP#{installed_php_version}) in $PATH does not support building this extension version (PHP#{required_php_version}). Consider installing  with the `--without-homebrew-php` flag.
-    EOS
-  end
-end
-
 class AbstractPhpExtension < Formula
   desc "Abstract class for PHP Extension Formula"
   homepage "https://github.com/shivammathur/homebrew-phalcon"
 
-  PHP_REGEX = /[P,p][H,h][P,p][@]*([5,7])\.([0-9]+)/.freeze
-
-  def initialize(*)
-    super
-
-    if build.without? "homebrew-php"
-      installed_php_version = nil
-      i = IO.popen("#{phpize} -v")
-      out = i.readlines.join("")
-      i.close
-      {
-        70 => 2015.*,
-        71 => 2016.*,
-        72 => 2017.*,
-        73 => 2018.*,
-        74 => 2019.*,
-      }.each do |v, api|
-        installed_php_version =~ v.to_s if out.match?(/#{api}/)
-      end
-
-      raise UnsupportedPhpApiError if installed_php_version.nil?
-
-      required_php_version = php_branch.sub(".", "").to_s
-      unless installed_php_version == required_php_version
-        raise InvalidPhpizeError.new(installed_php_version, required_php_version)
-      end
-    end
-  end
+  PHP_REGEX = /[P,p][H,h][P,p]@*([5,7,8])\.([0-9]+)/.freeze
 
   def self.init
     depends_on "autoconf" => :build
-
-    option "without-homebrew-php", "Ignore homebrew PHP and use default instead"
-    option "without-config-file", "Do not install extension config file"
   end
 
-  def php_branch
-    class_name = self.class.name.split("::").last
-    if self.class::PHP_FORMULA
-      class_name = self.class::PHP_FORMULA
-      class_name == "homebrew/core/php" && class_name = "homebrew/core/php@7.4"
-    end
+  def php_version
+    class_name = self.class::PHP_FORMULA
     matches = PHP_REGEX.match(class_name)
     matches[1] + "." + matches[2] if matches
   end
 
   def php_formula
-    if php_branch == "7.4"
-      "homebrew/core/php"
-    else
-      "shivammathur/php/php@" + php_branch
-    end
+    "php@" + php_version
   end
 
   def safe_phpize
     ENV["PHP_AUTOCONF"] = "#{Formula["autoconf"].opt_bin}/autoconf"
     ENV["PHP_AUTOHEADER"] = "#{Formula["autoconf"].opt_bin}/autoheader"
-    system phpize
-  end
-
-  def phpize
-    if build.without? "homebrew-php"
-      "phpize"
-    else
-      "#{Formula[php_formula].opt_bin}/phpize"
-    end
-  end
-
-  def phpini
-    if build.without? "homebrew-php"
-      "php.ini presented by \"php --ini\""
-    else
-      "#{Formula[php_formula].config_path}/php.ini"
-    end
+    system "#{Formula[php_formula].opt_bin}/phpize"
   end
 
   def phpconfig
-    if build.without? "homebrew-php"
-      ""
-    else
-      "--with-php-config=#{Formula[php_formula].opt_bin}/php-config"
-    end
+    "--with-php-config=#{Formula[php_formula].opt_bin}/php-config"
   end
 
   def extension
@@ -119,7 +46,6 @@ class AbstractPhpExtension < Formula
   end
 
   def extension_type
-    # extension or zend_extension
     "extension"
   end
 
@@ -137,32 +63,12 @@ class AbstractPhpExtension < Formula
   end
 
   def caveats
-    caveats = ["To finish installing #{extension} for PHP #{php_branch}:"]
-
-    if build.without? "config-file"
-      caveats << "  * Add the following line to #{phpini}:\n"
-      caveats << config_file
-    else
-      caveats << "  * #{config_scandir_path}/#{config_filename} was created,"
-      caveats << "    do not forget to remove it upon extension removal."
-    end
-
-    caveats << <<-EOS
-      * Validate installation via one of the following methods:
-      *
-      * Using PHP from a webserver:
-      * - Restart your webserver.
-      * - Write a PHP page that calls "phpinfo();"
-      * - Load it in a browser and look for the info on the #{extension} module.
-      * - If you see it, you have been successful!
-      *
-      * Using PHP from the command line:
-      * - Run `php -i "(command-line 'phpinfo()')"`
-      * - Look for the info on the #{extension} module.
-      * - If you see it, you have been successful!
+    <<~EOS
+      To finish installing #{extension} for PHP #{php_version}:
+        * #{config_filepath} was created,"
+          do not forget to remove it upon extension removal."
+        * Validate installation by running php -m
     EOS
-
-    caveats.join("\n")
   end
 
   test do
@@ -170,20 +76,12 @@ class AbstractPhpExtension < Formula
     assert_match /#{extension.downcase}/, output, "failed to find extension in php -m output"
   end
 
-  def config_path
-    etc / "php" / php_branch
-  end
-
   def config_scandir_path
-    config_path / "conf.d"
-  end
-
-  def config_filename
-    "ext-" + extension + ".ini"
+    etc / "php" / php_version / "conf.d"
   end
 
   def config_filepath
-    config_scandir_path / config_filename
+    config_scandir_path / "#{extension}.ini"
   end
 
   def write_config_file
@@ -198,47 +96,65 @@ class AbstractPhpExtension < Formula
   end
 end
 
+class AbstractPhp56Extension < AbstractPhpExtension
+  include AbstractPhpVersion::Php56Defs
+
+  def self.init
+    super()
+    depends_on AbstractPhpVersion::Php56Defs::PHP_FORMULA => [:build, :test]
+  end
+end
+
 class AbstractPhp70Extension < AbstractPhpExtension
   include AbstractPhpVersion::Php70Defs
 
-  def self.init(opts = [])
+  def self.init
     super()
-    depends_on "shivammathur/php/php@7.0" => opts if build.with?("homebrew-php")
+    depends_on AbstractPhpVersion::Php70Defs::PHP_FORMULA => [:build, :test]
   end
 end
 
 class AbstractPhp71Extension < AbstractPhpExtension
   include AbstractPhpVersion::Php71Defs
 
-  def self.init(opts = [])
+  def self.init
     super()
-    depends_on "shivammathur/php/php@7.1" => opts if build.with?("homebrew-php")
+    depends_on AbstractPhpVersion::Php71Defs::PHP_FORMULA => [:build, :test]
   end
 end
 
 class AbstractPhp72Extension < AbstractPhpExtension
   include AbstractPhpVersion::Php72Defs
 
-  def self.init(opts = [])
+  def self.init
     super()
-    depends_on "shivammathur/php/php@7.2" => opts if build.with?("homebrew-php")
+    depends_on AbstractPhpVersion::Php72Defs::PHP_FORMULA => [:build, :test]
   end
 end
 
 class AbstractPhp73Extension < AbstractPhpExtension
   include AbstractPhpVersion::Php73Defs
 
-  def self.init(opts = [])
+  def self.init
     super()
-    depends_on "shivammathur/php/php@7.3" => opts if build.with?("homebrew-php")
+    depends_on AbstractPhpVersion::Php73Defs::PHP_FORMULA => [:build, :test]
   end
 end
 
 class AbstractPhp74Extension < AbstractPhpExtension
   include AbstractPhpVersion::Php74Defs
 
-  def self.init(opts = [])
+  def self.init
     super()
-    depends_on "homebrew/core/php" => opts if build.with?("homebrew-php")
+    depends_on AbstractPhpVersion::Php74Defs::PHP_FORMULA => [:build, :test]
+  end
+end
+
+class AbstractPhp80Extension < AbstractPhpExtension
+  include AbstractPhpVersion::Php80Defs
+
+  def self.init
+    super()
+    depends_on AbstractPhpVersion::Php80Defs::PHP_FORMULA => [:build, :test]
   end
 end

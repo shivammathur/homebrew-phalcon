@@ -1,9 +1,9 @@
 # shivammathur/homebrew-phalcon
 
 <a href="https://github.com/shivammathur/homebrew-phalcon" title="Homebrew tap to install PHP"><img alt="Build status" src="https://github.com/shivammathur/homebrew-phalcon/workflows/Build%20Formulae/badge.svg"></a>
-<a href="https://github.com/shivammathur/homebrew-php/blob/master/LICENSE" title="license"><img alt="LICENSE" src="https://img.shields.io/badge/license-MIT-428f7e.svg"></a>
-<a href="https://github.com/shivammathur/homebrew-php/tree/master/Formula" title="license"><img alt="PHP Versions Supported" src="https://img.shields.io/badge/phalcon-3-8892BF.svg"></a>
-<a href="https://github.com/shivammathur/homebrew-php/tree/master/Formula" title="license"><img alt="PHP Versions Supported" src="https://img.shields.io/badge/phalcon-4-8892BF.svg"></a>
+<a href="https://github.com/shivammathur/homebrew-phalcon/blob/master/LICENSE" title="license"><img alt="LICENSE" src="https://img.shields.io/badge/license-MIT-428f7e.svg"></a>
+<a href="https://github.com/shivammathur/homebrew-phalcon/tree/master/Formula" title="license"><img alt="PHP Versions Supported" src="https://img.shields.io/badge/phalcon-3-8892BF.svg"></a>
+<a href="https://github.com/shivammathur/homebrew-phalcon/tree/master/Formula" title="license"><img alt="PHP Versions Supported" src="https://img.shields.io/badge/phalcon-4-8892BF.svg"></a>
 
 > Homebrew tap for Phalcon releases.
 

@@ -6,9 +6,9 @@ on:
     - cron: '30 0 * * *'
 jobs:
   psr:
-    runs-on: macOS-latest
+    runs-on: macos-latest
+    if: "!contains(github.event.head_commit.message, 'skip-build')"
     strategy:
-      max-parallel: 3
       fail-fast: false
       matrix:
         psr-version:
@@ -22,25 +22,29 @@ jobs:
     - name: build
       run: sh ./.github/scripts/build_psr.sh
       env:
-        GIT_URL: https://github.com/shivammathur/homebrew-phalcon.git
+        GITHUB_ACTIONS: true
+        GITHUB_MESSAGE: ${{ github.event.head_commit.message }}          
         GITHUB_REPOSITORY: ${{ github.repository }}
-        GITHUB_NAME: "Shivam Mathur"        
-        HOMEBREW_BINTRAY_USER: shivammathur
+        GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GIT_URL: ${{ github.event.repository.html_url }}      
+        HOMEBREW_BINTRAY_USER: ${{ github.repository_owner }}
         HOMEBREW_BINTRAY_REPO: phalcon
         HOMEBREW_BINTRAY_EMAIL: ${{ secrets.email }}
         HOMEBREW_BINTRAY_KEY: ${{ secrets.bintray_key }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        HOMEBREW_NO_ANALYTICS: 1
+        HOMEBREW_NO_AUTO_UPDATE: 1
+        HOMEBREW_NO_INSTALL_CLEANUP: 1
         PSR_VERSION: ${{ matrix.psr-version }}
-        GITHUB_ACTIONS: true
       continue-on-error: true
   phalcon:
     needs: psr
-    runs-on: macOS-latest
+    runs-on: macos-latest
+    if: "!contains(github.event.head_commit.message, 'skip-build')"
     strategy:
-      max-parallel: 3
       fail-fast: false
       matrix:
-        psr-version:
+        phalcon-version:
           - 'phalcon@7.0_3'
           - 'phalcon@7.1_3'
           - 'phalcon@7.2_3'
@@ -53,15 +57,19 @@ jobs:
       - name: build
         run: sh ./.github/scripts/build_phalcon.sh
         env:
-          GIT_URL: https://github.com/shivammathur/homebrew-phalcon.git
+          GITHUB_ACTIONS: true
+          GITHUB_MESSAGE: ${{ github.event.head_commit.message }}          
           GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_NAME: "Shivam Mathur"
-          HOMEBREW_BINTRAY_USER: shivammathur
+          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GIT_URL: ${{ github.event.repository.html_url }}
+          HOMEBREW_BINTRAY_USER: ${{ github.repository_owner }}
           HOMEBREW_BINTRAY_REPO: phalcon
           HOMEBREW_BINTRAY_EMAIL: ${{ secrets.email }}
           HOMEBREW_BINTRAY_KEY: ${{ secrets.bintray_key }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PHALCON_VERSION: ${{ matrix.psr-version }}
-          GITHUB_ACTIONS: true
+          HOMEBREW_NO_ANALYTICS: 1
+          HOMEBREW_NO_AUTO_UPDATE: 1
+          HOMEBREW_NO_INSTALL_CLEANUP: 1
+          PHALCON_VERSION: ${{ matrix.phalcon-version }}          
         continue-on-error: true
       

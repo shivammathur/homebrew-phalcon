@@ -3,7 +3,7 @@ require File.expand_path("../Abstract/abstract-php-extension", __dir__)
 class PhalconAT703 < AbstractPhp70Extension
   init
   desc "Full-stack PHP framework"
-  homepage "https://phalconphp.com/"
+  homepage "https://phalcon.io/en-us"
   url "https://github.com/phalcon/cphalcon/archive/v3.4.5.tar.gz"
   sha256 "4c56420641a4a12f95e93e65a107aba8ef793817da57a4c29346c012faf66777"
   head "https://github.com/phalcon/cphalcon.git"
@@ -23,6 +23,6 @@ class PhalconAT703 < AbstractPhp70Extension
     system "./configure", "--prefix=#{prefix}", phpconfig, "--enable-phalcon"
     system "make"
     prefix.install "modules/phalcon.so"
-    write_config_file if build.with? "config-file"
+    write_config_file
   end
 end
