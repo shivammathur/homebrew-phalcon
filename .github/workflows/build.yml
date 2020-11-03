@@ -27,7 +27,7 @@ jobs:
         GITHUB_REPOSITORY: ${{ github.repository }}
         GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        GIT_URL: ${{ github.event.repository.html_url }}      
+        GIT_URL: ${{ github.event.repository.html_url }}
         HOMEBREW_BINTRAY_USER: ${{ github.repository_owner }}
         HOMEBREW_BINTRAY_REPO: phalcon
         HOMEBREW_BINTRAY_EMAIL: ${{ secrets.email }}
