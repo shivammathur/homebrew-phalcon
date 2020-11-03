@@ -18,7 +18,6 @@ add_log() {
 }
 
 step_log "Housekeeping"
-unset HOMEBREW_DISABLE_LOAD_FORMULA
 brew update-reset "$(brew --repository)" >/dev/null 2>&1
 add_log "$tick" "Housekeeping" "Done"
 
@@ -76,7 +75,7 @@ if [[ "$GITHUB_MESSAGE" = *--build-all* ]] || [ "$new_version" != "$existing_ver
 
     step_log "Updating inventory"
     git config --local user.email homebrew-test-bot@lists.sfconservancy.org
-    git config --local user.name BrewTestBot    
+    git config --local user.name BrewTestBot
     for try in $(seq 10); do
       echo "try: $try" >/dev/null
       git fetch origin master && git rebase origin/master
