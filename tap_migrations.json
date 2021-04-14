@@ -1,0 +1,10 @@
+{
+  "phalcon@5.6_3": "shivammathur/extensions",
+  "phalcon@7.0_3": "shivammathur/extensions",
+  "phalcon@7.1_3": "shivammathur/extensions",
+  "phalcon@7.2_3": "shivammathur/extensions",
+  "phalcon@7.3_3": "shivammathur/extensions",
+  "phalcon@7.2_4": "shivammathur/extensions",
+  "phalcon@7.3_4": "shivammathur/extensions",
+  "phalcon@7.4_4": "shivammathur/extensions"
+}
