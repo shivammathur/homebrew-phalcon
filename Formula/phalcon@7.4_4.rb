@@ -10,6 +10,9 @@ class PhalconAT744 < AbstractPhpExtension
 
   bottle do
     root_url "https://ghcr.io/v2/shivammathur/phalcon"
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "2f0c43146800103c72001685ec9f8f9c64aa493102159d050abc8e394dc13310"
+    sha256 cellar: :any_skip_relocation, big_sur:       "fe62950a7a8aa9e42a356c34d4aec9c41492a1dfb89516935a7a15b10c76db71"
+    sha256 cellar: :any_skip_relocation, catalina:      "ffd3095e7088025a8a87c2f5f3ce519e9a1967d155ede9852d126c31fc4cd3fe"
   end
 
   depends_on "pcre"
