@@ -4,43 +4,32 @@
 # Abstract class for PHP extensions
 class AbstractPhpExtension < Formula
   desc "Abstract class for PHP Extension Formula"
-  homepage "https://github.com/shivammathur/homebrew-extensions"
+  homepage "https://github.com/shivammathur/homebrew-phalcon"
 
-  EXTENSION_CLASS_REGEX = /\w+AT(\d)(\d)/.freeze
-
-  def self.init
-    class_name = name.split("::").last
-    matches = EXTENSION_CLASS_REGEX.match(class_name)
-    depends_on "autoconf" => :build
-    depends_on "pkg-config" => :build
-    depends_on "shivammathur/php/php@#{matches[1]}.#{matches[2]}" => [:build, :test]
+  def caveats
+    <<~EOS
+      To finish installing #{extension} for PHP #{php_version}:
+        * #{config_filepath} was created,"
+          do not forget to remove it upon extension removal."
+        * Validate installation by running php -m
+    EOS
   end
 
-  def php_version
-    class_name = self.class.name.split("::").last
-    matches = EXTENSION_CLASS_REGEX.match(class_name)
-    "#{matches[1]}.#{matches[2]}" if matches
+  test do
+    output = shell_output("#{Formula[php_formula].opt_bin}/php -m").downcase
+    assert_match(/#{extension.downcase}/, output, "failed to find extension in php -m output")
   end
+
+  private
+
+  delegate [:php_version, :extension] => :"self.class"
 
   def php_formula
     "php@#{php_version}"
   end
 
-  def safe_phpize
-    ENV["PHP_AUTOCONF"] = "#{Formula["autoconf"].opt_bin}/autoconf"
-    ENV["PHP_AUTOHEADER"] = "#{Formula["autoconf"].opt_bin}/autoheader"
-    system "#{Formula[php_formula].opt_bin}/phpize"
-  end
-
   def phpconfig
     "--with-php-config=#{Formula[php_formula].opt_bin}/php-config"
-  end
-
-  def extension
-    class_name = self.class.name.split("::").last.split("AT").first
-    raise "Unable to guess PHP extension name for #{class_name}" unless class_name
-
-    class_name.downcase.tr("0-9", "").gsub("pecl", "")
   end
 
   def extension_type
@@ -64,26 +53,18 @@ class AbstractPhpExtension < Formula
     raise error
   end
 
-  def caveats
-    <<~EOS
-      To finish installing #{extension} for PHP #{php_version}:
-        * #{config_filepath} was created,"
-          do not forget to remove it upon extension removal."
-        * Validate installation by running php -m
-    EOS
-  end
-
-  test do
-    output = shell_output("#{Formula[php_formula].opt_bin}/php -m").downcase
-    assert_match(/#{extension.downcase}/, output, "failed to find extension in php -m output")
-  end
-
   def config_scandir_path
     etc / "php" / php_version / "conf.d"
   end
 
   def config_filepath
     config_scandir_path / "#{extension}.ini"
+  end
+
+  def safe_phpize
+    ENV["PHP_AUTOCONF"] = "#{Formula["autoconf"].opt_bin}/autoconf"
+    ENV["PHP_AUTOHEADER"] = "#{Formula["autoconf"].opt_bin}/autoheader"
+    system "#{Formula[php_formula].opt_bin}/phpize"
   end
 
   def write_config_file
@@ -94,6 +75,32 @@ class AbstractPhpExtension < Formula
     elsif config_file
       config_scandir_path.mkpath
       config_filepath.write(config_file)
+    end
+  end
+
+  def add_include_files
+    files = Dir["*.h"]
+    (include/"php/ext/#{extension}@#{php_version}").install files unless files.empty?
+  end
+
+  def patch_spl_symbols
+    %w[Aggregate ArrayAccess Countable Iterator Serializable Stringable Traversable].each do |s|
+      files = Dir["**/*"].select { |f| File.file?(f) && File.read(f).scrub.include?("spl_ce_#{s}") }
+      inreplace files, "spl_ce_#{s}", "zend_ce_#{s}".downcase unless files.empty?
+    end
+  end
+
+  class << self
+    attr_reader :php_version, :extension
+
+    def init
+      class_name = name.split("::").last
+      matches = /(\w+)AT(\d)(\d)/.match(class_name)
+      @extension = matches[1].downcase.tr("0-9", "").gsub("pecl", "") if matches
+      @php_version = "#{matches[2]}.#{matches[3]}" if matches
+      depends_on "autoconf" => :build
+      depends_on "pkg-config" => :build
+      depends_on "shivammathur/php/php@#{@php_version}" => [:build, :test]
     end
   end
 end
