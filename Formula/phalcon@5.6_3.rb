@@ -1,6 +1,6 @@
 require File.expand_path("../Abstract/abstract-php-extension", __dir__)
 
-class PhalconAT713 < AbstractPhpExtension
+class PhalconAT563 < AbstractPhpExtension
   init
   desc "Full-stack PHP framework"
   homepage "https://phalcon.io/en-us"
@@ -13,10 +13,10 @@ class PhalconAT713 < AbstractPhpExtension
   end
 
   depends_on "pcre"
-  depends_on "shivammathur/extensions/psr@7.1"
+  depends_on "shivammathur/extensions/psr@5.6"
 
   def install
-    Dir.chdir "build/php7/64bits"
+    Dir.chdir "build/php5/64bits"
     safe_phpize
     system "./configure", "--prefix=#{prefix}", phpconfig, "--enable-phalcon"
     system "make"

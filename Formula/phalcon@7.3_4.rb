@@ -1,6 +1,6 @@
 require File.expand_path("../Abstract/abstract-php-extension", __dir__)
 
-class PhalconAT734 < AbstractPhp73Extension
+class PhalconAT734 < AbstractPhpExtension
   init
   desc "Full-stack PHP framework"
   homepage "https://phalcon.io/en-us"
@@ -9,13 +9,11 @@ class PhalconAT734 < AbstractPhp73Extension
   head "https://github.com/phalcon/cphalcon.git"
 
   bottle do
-    root_url "https://dl.bintray.com/shivammathur/phalcon"
-    cellar :any_skip_relocation
-    sha256 "16a944ef74e9427cb5f73716788b2b4645f3af6da21738ab25d014a2297a5998" => :catalina
+    root_url "https://ghcr.io/v2/shivammathur/phalcon"
   end
 
   depends_on "pcre"
-  depends_on "psr@7.3"
+  depends_on "shivammathur/extensions/psr@7.3"
 
   def install
     Dir.chdir "build/php7/64bits"
