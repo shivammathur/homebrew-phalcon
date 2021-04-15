@@ -6,11 +6,11 @@ class AbstractPhpExtension < Formula
   desc "Abstract class for PHP Extension Formula"
   homepage "https://github.com/shivammathur/homebrew-extensions"
 
-  NAME_REGEX = /\w+AT(\d)(\d)/.freeze
+  EXTENSION_CLASS_REGEX = /\w+AT(\d)(\d)/.freeze
 
   def self.init
     class_name = name.split("::").last
-    matches = NAME_REGEX.match(class_name)
+    matches = EXTENSION_CLASS_REGEX.match(class_name)
     depends_on "autoconf" => :build
     depends_on "pkg-config" => :build
     depends_on "shivammathur/php/php@#{matches[1]}.#{matches[2]}" => [:build, :test]
@@ -18,7 +18,7 @@ class AbstractPhpExtension < Formula
 
   def php_version
     class_name = self.class.name.split("::").last
-    matches = NAME_REGEX.match(class_name)
+    matches = EXTENSION_CLASS_REGEX.match(class_name)
     "#{matches[1]}.#{matches[2]}" if matches
   end
 
